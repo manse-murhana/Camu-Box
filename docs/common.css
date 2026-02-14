@@ -79,9 +79,3 @@ button:disabled {
   align-items: center;
   gap: 8px;
 }
-
-.github-icon {
-  width: 16px;
-  height: 16px;
-  fill: currentColor;
-}
