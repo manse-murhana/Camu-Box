@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Camu-Box</title>
+    <link rel="stylesheet" href="common.css" />
+    <style>
+      .container {
+        max-width: 640px;
+        margin: 0 auto;
+        border-radius: 16px;
+      }
+
+      h1 {
+        font-size: 2em;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+
+      .description {
+        text-align: center;
+        margin-bottom: 24px;
+        line-height: 1.7;
+      }
+
+      .link-list {
+        list-style: none;
+        display: grid;
+        gap: 12px;
+      }
+
+      .link-list a {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid;
+        border-radius: 10px;
+        font-weight: 600;
+      }
+
+      .link-desc {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.9em;
+        font-weight: 400;
+        opacity: 0.8;
+      }
+
+      .link-list a:hover {
+        text-decoration: none;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 24px;
+        }
+
+        h1 {
+          font-size: 1.6em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎵 Camu-Box</h1>
+      <p class="description">利用したいページを選択してください。</p>
+
+      <ul class="link-list">
+        <li>
+          <a href="player/">
+            Player
+            <span class="link-desc"
+              >NFCタグのデータを読み取り、MIDIを再生します。</span
+            >
+          </a>
+        </li>
+        <li>
+          <a href="writer/">
+            Writer
+            <span class="link-desc">MIDIファイルをNFCタグに書き込みます。</span>
+          </a>
+        </li>
+      </ul>
+
+      <div data-common-footer data-terms-path="terms.html"></div>
+    </div>
+    <script src="scripts/commonFooter.js"></script>
+  </body>
+</html>

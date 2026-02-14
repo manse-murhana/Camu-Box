@@ -1,0 +1,209 @@
+.container {
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.terms-note {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.terms-note a {
+  font-weight: 600;
+}
+
+.upload-area {
+  border: 2px dashed #667eea;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.upload-area:hover {
+  background: #f0f0ff;
+  border-color: #764ba2;
+}
+
+.upload-area.drag-over {
+  background: #e8e8ff;
+  border-color: #764ba2;
+}
+
+.upload-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.upload-text {
+  color: #667eea;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.upload-hint {
+  color: #999;
+  font-size: 13px;
+}
+
+#midiInput {
+  display: none;
+}
+
+.file-info {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f0f0ff;
+  border-radius: 8px;
+  display: none;
+}
+
+.file-info.show {
+  display: block;
+}
+
+.file-name {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.file-size {
+  color: #999;
+  font-size: 13px;
+}
+
+.url-input-section {
+  margin-top: 20px;
+  display: none;
+}
+
+.url-input-section.show {
+  display: block;
+}
+
+.url-input-section label {
+  display: block;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.url-input-section input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+.url-input-section input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.status {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  display: none;
+  font-size: 14px;
+}
+
+.status.show {
+  display: block;
+}
+
+.status.processing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.output-section {
+  margin-top: 30px;
+  display: none;
+}
+
+.output-section.show {
+  display: block;
+}
+
+.output-label {
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.output-box {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  color: #333;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.btn-nfc {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-nfc:hover {
+  background: #ee5a52;
+}
+
+.btn-nfc:disabled {
+  background: #ccc;
+}
+
+.info-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #e7f3ff;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #1565c0;
+}
