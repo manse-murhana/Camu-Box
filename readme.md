@@ -2,7 +2,7 @@
 
 **NFCタグで持ち運べるオルゴール！**
 
-MIDI形式の音楽を圧縮してURL化することで、NFCタグ等の小容量記憶媒体にMIDIデータを格納し、ブラウザ上のプレイヤーで再生できるようにします。
+MIDI形式の音楽をNFCタグに格納し、ブラウザ上のプレイヤーで再生できるようにします。
 
 ## 利用可能環境
 
@@ -13,8 +13,13 @@ WebNFCを使用するため、上記以外の環境では動作しません。
 
 ## 使い方
 
-GitHub Pagesにて、NFCタグを使った音楽再生・NFCタグへの書き込みページを公開しています。  
-https://manse-murhana.github.io/Camu-Box
+### 再生用NFCタグの作成
+GitHub Pagesにて、[書き込みページ](https://manse-murhana.github.io/Camu-Box/writer)を公開していますので、こちらをご利用ください。
+
+### 再生
+
+AndroidスマートフォンでNFCタグを読み込むことで、ブラウザが開き[再生ページ](https://manse-murhana.github.io/Camu-Box/player)に移動します。  
+再生ページで再度NFCタグの読み取り操作を行うことで、格納された音楽を再生できます。
 
 ## セルフホスト
 
