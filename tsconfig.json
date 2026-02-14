@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "lib": ["DOM", "ES2022"],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true
+  },
+  "include": ["docs/**/*.ts", "docs/types/**/*.d.ts"]
+}

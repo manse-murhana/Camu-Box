@@ -2,17 +2,21 @@
   "name": "midi2base64",
   "private": true,
   "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json",
     "lint": "npm run lint:js && npm run lint:html",
-    "lint:js": "eslint \"docs/**/*.js\"",
+    "lint:js": "eslint \"docs/**/scripts/*.{js,ts}\"",
     "lint:html": "htmlhint \"docs/**/*.html\"",
-    "format": "prettier --write \"**/*.{js,html,css,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,html,css,json,md}\""
+    "format": "prettier --write \"**/*.{js,ts,html,css,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,html,css,json,md}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@typescript-eslint/parser": "^8.44.1",
     "eslint": "^9.21.0",
     "globals": "^15.14.0",
     "htmlhint": "^1.6.3",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
   }
 }

@@ -25,3 +25,11 @@ AndroidスマートフォンでNFCタグを読み込むことで、ブラウザ�
 
 `docs/player`,`docs/writer`の内容をホストすることで利用できます。
 webNFCの仕様により、httpsアクセスできる環境が必要です。
+
+### 開発/ビルド
+
+このプロジェクトのフロントエンドスクリプトはTypeScript (`docs/**/*.ts`) で管理しています。
+
+- 依存関係インストール: `npm install`
+- ビルド（`*.ts` -> `*.js`）: `npm run build`
+- 監視ビルド: `npm run watch`
