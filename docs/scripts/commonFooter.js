@@ -6,6 +6,8 @@
       </svg>
     </a>
     /
+    <a class="top-link" href="https://manse-murhana.github.io/Camu-Box/">Top</a>
+    /
     <a class="terms-link" href="${termsPath}" target="_blank" rel="noopener">利用規約</a>
   `;
 
