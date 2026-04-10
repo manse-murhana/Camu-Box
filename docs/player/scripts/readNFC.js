@@ -7,6 +7,8 @@ if (!nfcUtils) {
 const nfcCommon = nfcUtils;
 // AbortControllerを保持して、読み取りを中止できるようにする
 let nfcAbortController = null;
+let nfcStopScheduled = false;
+const NFC_STOP_DELAY_MS = 5000;
 async function waitForMidiLoader(timeoutMs = 2000, intervalMs = 50) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -48,6 +50,10 @@ async function handleNfcMessage(message) {
         return;
     }
     const log = api.log ?? ((message) => console.log(message));
+    if (nfcStopScheduled) {
+        log("NFC stop is scheduled, ignoring additional tag reads");
+        return;
+    }
     const records = message?.records;
     if (!records?.length || records.length < 2) {
         log("NFC message has no data record");
@@ -67,15 +73,19 @@ async function handleNfcMessage(message) {
     const loadMidi = await waitForMidiLoader();
     if (loadMidi) {
         await loadMidi(JSON.stringify(midiJson));
-        // MIDI読み込み成功後、NFC読み取りを中止
+        nfcStopScheduled = true;
+        log(`MIDI loaded. NFC reading will stop in ${NFC_STOP_DELAY_MS / 1000} seconds`);
+        await new Promise((resolve) => setTimeout(resolve, NFC_STOP_DELAY_MS));
+        // MIDI読み込み成功後、5秒待ってからNFC読み取りを中止
         stopNfcReader();
-        log("NFC reading stopped after successful MIDI load");
+        log("NFC reading stopped 5 seconds after successful MIDI load");
     }
     else {
         log("MIDI loader is not ready");
     }
 }
 function stopNfcReader() {
+    nfcStopScheduled = false;
     if (nfcAbortController) {
         nfcAbortController.abort();
         nfcAbortController = null;
@@ -100,6 +110,7 @@ async function startNfcReader() {
     }
     try {
         log("NFC reader starting");
+        nfcStopScheduled = false;
         // 新しいAbortControllerを作成
         nfcAbortController = new AbortController();
         const nfcReader = new NDEFReader();
