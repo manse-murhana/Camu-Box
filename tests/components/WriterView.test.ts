@@ -39,6 +39,18 @@ vi.mock("../../src/composables/useWebNfcSupport", () => ({
   }),
 }));
 
+function mountWriterView() {
+  return mount(WriterView, {
+    global: {
+      stubs: {
+        RouterLink: {
+          template: "<a><slot /></a>",
+        },
+      },
+    },
+  });
+}
+
 describe("WriterView", () => {
   beforeEach(() => {
     storeState.compressionType = "lzma";
@@ -56,7 +68,7 @@ describe("WriterView", () => {
   });
 
   it("passes the selected file to the store", async () => {
-    const wrapper = mount(WriterView);
+    const wrapper = mountWriterView();
     const file = new File([Uint8Array.from([1, 2, 3])], "song.mid", { type: "audio/midi" });
     const input = wrapper.get("input[type='file']");
 
@@ -70,11 +82,11 @@ describe("WriterView", () => {
   });
 
   it("updates the compression type and forwards NFC writes", async () => {
-    const wrapper = mount(WriterView);
+    const wrapper = mountWriterView();
     storeState.hasData = true;
 
     await wrapper.get("input[value='gzip']").setValue(true);
-    await wrapper.get("button.danger-button").trigger("click");
+    await wrapper.get("button.nfc-start-btn").trigger("click");
 
     expect(writerViewMocks.setCompressionType).toHaveBeenCalledWith("gzip");
     expect(writerViewMocks.writeToNfc).toHaveBeenCalledTimes(1);
@@ -83,8 +95,8 @@ describe("WriterView", () => {
   it("disables NFC writing when Web NFC is unavailable", () => {
     writerViewMocks.nfcSupported = false;
 
-    const wrapper = mount(WriterView);
-    const writeButton = wrapper.get("button.danger-button");
+    const wrapper = mountWriterView();
+    const writeButton = wrapper.get("button.nfc-start-btn");
 
     expect(writeButton.attributes("disabled")).toBeDefined();
     expect(wrapper.text()).toContain("Android, Google Chromeにのみ対応しています");

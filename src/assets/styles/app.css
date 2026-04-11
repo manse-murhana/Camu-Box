@@ -373,6 +373,7 @@ button {
   width: 100%;
   max-width: 300px;
   padding: 16px 40px;
+  border-radius: 999px;
   font-size: 18px;
   background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);

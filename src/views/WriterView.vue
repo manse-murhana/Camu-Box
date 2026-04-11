@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
 
 import type { CompressionType } from "../types/web-music";
 import { useWriterStore } from "../stores/writerStore";
@@ -122,12 +123,16 @@ async function onDrop(event: DragEvent): Promise<void> {
 
       <div class="action-row">
         <button
-          class="danger-button"
+          :class="['nfc-start-btn', store.isWriting ? 'secondary-button' : 'primary-button', { 'scan-active': store.isWriting }]"
           :disabled="!nfcSupported || !store.hasData || store.isWriting"
           @click="store.writeToNfc"
         >
           {{ store.isWriting ? "書き込み中..." : "NFC に書き込み" }}
         </button>
+        <p class="nfc-warning">
+          利用前に <RouterLink to="/terms">規約</RouterLink>
+          を確認してください。
+        </p>
       </div>
     </BasePanel>
   </section>
