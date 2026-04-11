@@ -5,29 +5,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
 interface Props {
-  size?: 'lg' | 'md' | 'sm';
+  size?: "lg" | "md" | "sm";
   gradient?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  size: 'lg',
+  size: "lg",
   gradient: false,
 });
 
 const cardClasses = computed(() => {
   const classes = [];
-  
-  if (props.size === 'sm') {
-    classes.push('card-sm');
+
+  if (props.size === "sm") {
+    classes.push("card-sm");
   }
-  
+
   if (props.gradient) {
-    classes.push('card-gradient');
+    classes.push("card-gradient");
   }
-  
   return classes;
 });
 </script>
