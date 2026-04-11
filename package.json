@@ -2,6 +2,7 @@
   "name": "midi2base64",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
@@ -11,12 +12,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "npm run lint:js && npm run lint:html",
+    "lint": "pnpm run lint:js && pnpm run lint:html",
     "lint:js": "eslint \"src/**/*.ts\" \"vite.config.ts\"",
     "lint:html": "htmlhint \"index.html\" \"public/**/*.html\"",
     "format": "prettier --write \"**/*.{js,ts,vue,html,css,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,ts,vue,html,css,json,md}\"",
-    "prepare": "husky"
+    "format:check": "prettier --check \"**/*.{js,ts,vue,html,css,json,md}\""
   },
   "dependencies": {
     "@magenta/music": "^1.23.1",
@@ -37,7 +37,6 @@
     "eslint": "^9.21.0",
     "globals": "^15.14.0",
     "htmlhint": "^1.6.3",
-    "husky": "^9.1.7",
     "jsdom": "^29.0.2",
     "prettier": "^3.5.3",
     "typescript": "^5.8.2",

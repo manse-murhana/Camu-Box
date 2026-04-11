@@ -23,21 +23,21 @@ AndroidスマートフォンでNFCタグを読み込むことで、ブラウザ�
 
 ## セルフホスト
 
-`npm run build` で生成される `dist/` をホストすることで利用できます。
+`pnpm run build` で生成される `dist/` をホストすることで利用できます。
 webNFCの仕様により、httpsアクセスできる環境が必要です。
 
 ### 開発/ビルド
 
 フロントエンドは Vue 3 + Vite 構成です。アプリ本体は `src/`、静的公開ファイルは `public/` 配下で管理しています。
 
-- 依存関係インストール: `npm install`
-- 開発サーバー: `npm run dev`
-- 型チェック: `npm run typecheck`
-- テスト実行: `npm run test`
-- テスト監視: `npm run test:watch`
-- カバレッジ: `npm run test:coverage`
-- 本番ビルド: `npm run build`
-- プレビュー: `npm run preview`
+- 依存関係インストール: `pnpm install`
+- 開発サーバー: `pnpm run dev`
+- 型チェック: `pnpm run typecheck`
+- テスト実行: `pnpm run test`
+- テスト監視: `pnpm run test:watch`
+- カバレッジ: `pnpm run test:coverage`
+- 本番ビルド: `pnpm run build`
+- プレビュー: `pnpm run preview`
 
 ### テスト
 
@@ -47,7 +47,7 @@ webNFCの仕様により、httpsアクセスできる環境が必要です。
 - component test: `tests/components/`
 - 共通 setup: `tests/setup.ts`
 
-CI では `npm run typecheck`、`npm run lint`、`npm run test:coverage` を実行します。
+CI では `pnpm run typecheck`、`pnpm run lint`、`pnpm run test:coverage` を実行します。
 
 ### GitHub Pages
 
