@@ -33,8 +33,21 @@ webNFCの仕様により、httpsアクセスできる環境が必要です。
 - 依存関係インストール: `npm install`
 - 開発サーバー: `npm run dev`
 - 型チェック: `npm run typecheck`
+- テスト実行: `npm run test`
+- テスト監視: `npm run test:watch`
+- カバレッジ: `npm run test:coverage`
 - 本番ビルド: `npm run build`
 - プレビュー: `npm run preview`
+
+### テスト
+
+自動テストは Vitest + Vue Test Utils で構成しています。DOM を使う処理は jsdom 上で実行し、Web NFC や CompressionStream、LZMA、音源再生のような実機依存部分は mock で分離しています。
+
+- unit test: `tests/unit/`
+- component test: `tests/components/`
+- 共通 setup: `tests/setup.ts`
+
+CI では `npm run typecheck`、`npm run lint`、`npm run test:coverage` を実行します。
 
 ### GitHub Pages
 

@@ -1,27 +1,31 @@
-import { defineConfig } from "vite";
+import { defineConfig, type ConfigEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
 import basicSsl from "@vitejs/plugin-basic-ssl";
 
-export default defineConfig(({ mode }) => ({
-  plugins: [vue(), basicSsl()],
-  base: mode === "production" ? "/Camu-Box/" : "/",
-  define: {
-    global: "globalThis",
-  },
-  resolve: {
-    alias: {
-      buffer: "buffer",
+export function createAppConfig({ mode }: ConfigEnv) {
+  return {
+    plugins: [vue(), basicSsl()],
+    base: mode === "production" ? "/Camu-Box/" : "/",
+    define: {
+      global: "globalThis",
     },
-  },
-  optimizeDeps: {
-    esbuildOptions: {
-      define: {
-        global: "globalThis",
+    resolve: {
+      alias: {
+        buffer: "buffer",
       },
     },
-  },
-  build: {
-    outDir: "dist",
-    assetsDir: "assets",
-  },
-}));
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
+      },
+    },
+    build: {
+      outDir: "dist",
+      assetsDir: "assets",
+    },
+  };
+}
+
+export default defineConfig(createAppConfig);
