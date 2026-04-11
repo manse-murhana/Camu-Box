@@ -85,9 +85,6 @@ button {
   max-width: 1120px;
   width: 100%;
   margin: 0 auto;
-}
-
-.shell-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -225,15 +222,6 @@ button {
   /* max-width removed — unified via .panel */
 }
 
-.eyebrow {
-  margin: 0 0 10px;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #3b82f6;
-  font-weight: 700;
-}
-
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -258,33 +246,6 @@ button {
 
 .feature-card span {
   color: var(--muted);
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.status-pill.ok {
-  background: rgba(16, 185, 129, 0.14);
-  color: #047857;
-}
-
-.status-pill.warning {
-  background: rgba(245, 158, 11, 0.16);
-  color: #b45309;
 }
 
 .action-row {
@@ -330,11 +291,6 @@ button {
 .secondary-button:hover:not(:disabled),
 .danger-button:hover:not(:disabled) {
   transform: translateY(-1px);
-}
-
-.notice-text {
-  color: #a16207;
-  font-size: 0.92rem;
 }
 
 .track-card,
@@ -542,6 +498,24 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-sm);
+}
+
+.info-item {
+  display: grid;
+  gap: 4px;
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.info-item span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.info-item strong {
+  color: var(--ink);
 }
 
 .radio-group {

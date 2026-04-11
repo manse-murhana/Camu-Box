@@ -3,27 +3,15 @@ import { describe, expect, it, vi } from "vitest";
 import {
   base64urlDecode,
   base64urlEncode,
-  countControlChars,
   detectAndDecodeText,
   ensureCompressionStreamSupported,
   ensureDecompressionStreamSupported,
-  extractMidiInfo,
-  isAsciiOnly,
   lzmaCompress,
   lzmaDecompress,
   validateMidiInfo,
 } from "../../src/utils/dataUtils";
 
 describe("dataUtils", () => {
-  it("detects ASCII-only strings", () => {
-    expect(isAsciiOnly("MIDI Ready")).toBe(true);
-    expect(isAsciiOnly("テスト")).toBe(false);
-  });
-
-  it("counts control characters", () => {
-    expect(countControlChars("A\u0000B\u007FC")).toBe(2);
-  });
-
   it("encodes and decodes base64url", () => {
     const source = Uint8Array.from([0, 255, 16, 32, 45]);
 
@@ -45,17 +33,6 @@ describe("dataUtils", () => {
 
     expect(detectAndDecodeText(text)).toBe(text);
     expect(detectAndDecodeText(undefined)).toBeUndefined();
-  });
-
-  it("extracts MIDI info from JSON payloads", () => {
-    expect(extractMidiInfo('{"data":"abc","compression":"gzip"}')).toEqual({
-      data: "abc",
-      compression: "gzip",
-    });
-    expect(extractMidiInfo('{"data":"abc"}')).toEqual({ data: "abc", compression: undefined });
-    expect(extractMidiInfo("not json")).toBeNull();
-    expect(extractMidiInfo('{"compression":"gzip"}')).toBeNull();
-    expect(extractMidiInfo("   ")).toBeNull();
   });
 
   it("rejects base64url data with invalid length (length % 4 === 1)", () => {

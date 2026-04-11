@@ -4,15 +4,11 @@ import { Midi } from "@tonejs/midi";
 
 import type { CompressionType } from "../types/web-music";
 
-import { base64urlEncode, gzipCompress, lzmaCompress } from "../utils/dataUtils";
+import { base64urlEncode, gzipCompress, lzmaCompress, toErrorMessage } from "../utils/dataUtils";
 import { writeJsonToNfc } from "../utils/nfcUtils";
 import { getDefaultPlayerUrl } from "../utils/playerUrl";
 
 type StatusType = "idle" | "processing" | "success" | "error";
-
-function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
 
 export const useWriterStore = defineStore("writer", () => {
   const compressionType = ref<CompressionType>("lzma");

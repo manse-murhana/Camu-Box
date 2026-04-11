@@ -4,6 +4,7 @@ import { RouterLink } from "vue-router";
 
 import { usePlayerStore } from "../stores/playerStore";
 import { startJsonNfcScan, type NfcScanSession, isWebNfcAvailable } from "../utils/nfcUtils";
+import { toErrorMessage } from "../utils/dataUtils";
 import { applyTheme } from "../utils/themes";
 
 const store = usePlayerStore();
@@ -29,9 +30,8 @@ async function startScan(): Promise<void> {
       stopAfterSuccessMs: 0,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
     scanning.value = false;
-    store.log(`NFC scan failed: ${message}`);
+    store.log(`NFC scan failed: ${toErrorMessage(error)}`);
   }
 }
 

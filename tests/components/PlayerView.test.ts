@@ -46,6 +46,18 @@ vi.mock("../../src/utils/themes", () => ({
   applyTheme: playerViewMocks.applyTheme,
 }));
 
+function mountPlayerView() {
+  return mount(PlayerView, {
+    global: {
+      stubs: {
+        RouterLink: {
+          template: "<a><slot /></a>",
+        },
+      },
+    },
+  });
+}
+
 describe("PlayerView", () => {
   beforeEach(() => {
     storeState.isPlaying = false;
@@ -71,7 +83,7 @@ describe("PlayerView", () => {
   });
 
   it("starts NFC scanning and applies the default theme on mount", async () => {
-    const wrapper = mount(PlayerView);
+    const wrapper = mountPlayerView();
 
     await wrapper.get("button").trigger("click");
 
@@ -83,14 +95,14 @@ describe("PlayerView", () => {
   it("disables scanning when Web NFC is unavailable", () => {
     playerViewMocks.isWebNfcAvailable.mockReturnValue(false);
 
-    const wrapper = mount(PlayerView);
+    const wrapper = mountPlayerView();
 
     expect(wrapper.get("button").attributes("disabled")).toBeDefined();
     expect(wrapper.text()).toContain("Web NFC Unsupported");
   });
 
   it("stops scanning and playback when unmounted", async () => {
-    const wrapper = mount(PlayerView);
+    const wrapper = mountPlayerView();
 
     await wrapper.get("button").trigger("click");
     wrapper.unmount();
