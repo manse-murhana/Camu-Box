@@ -77,12 +77,11 @@ button {
   min-height: 100vh;
   padding: 24px;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
   gap: 24px;
 }
 
-.shell-header,
-.shell-footer {
+.shell-header {
   max-width: 1120px;
   width: 100%;
   margin: 0 auto;
@@ -93,6 +92,12 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+}
+
+.brand-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .brand-link {
@@ -123,6 +128,21 @@ button {
 
 .brand-copy strong {
   font-size: 1.05rem;
+}
+
+.brand-github {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.brand-github:hover {
+  text-decoration: none;
+}
+
+.brand-github img {
+  display: block;
+  height: 28px;
 }
 
 .brand-copy small {
@@ -589,18 +609,6 @@ button {
   justify-content: center;
 }
 
-.page-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  color: rgba(255, 255, 255, 0.92);
-}
-
-.page-footer a {
-  color: white;
-}
-
 @media (max-width: 720px) {
   .app-shell {
     padding: var(--space-md);
@@ -609,6 +617,10 @@ button {
   .shell-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .brand-block {
+    justify-content: space-between;
   }
 
   .shell-nav {

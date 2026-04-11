@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { RouterLink } from "vue-router";
 
 import { usePlayerStore } from "../stores/playerStore";
 import { startJsonNfcScan, type NfcScanSession, isWebNfcAvailable } from "../utils/nfcUtils";
@@ -80,7 +81,7 @@ onBeforeUnmount(() => {
           {{ scanButtonLabel }}
         </button>
         <p class="nfc-warning">
-          利用前に <a href="./terms.html" target="_blank" rel="noopener">規約</a>
+          利用前に <RouterLink to="/terms">規約</RouterLink>
           を確認してください。
         </p>
       </div>
