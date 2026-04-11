@@ -48,11 +48,3 @@ webNFCの仕様により、httpsアクセスできる環境が必要です。
 - 共通 setup: `tests/setup.ts`
 
 CI では `pnpm run typecheck`、`pnpm run lint`、`pnpm run test:coverage` を実行します。
-
-### GitHub Pages
-
-このリポジトリには GitHub Actions による Pages デプロイ設定を含めています。公開元は `dist/` です。
-
-- GitHub の Pages 設定で `Source` を `GitHub Actions` に変更
-- `main` へ反映すると workflow が `dist/` を公開
-- 旧来の `/player/` と `/writer/` パスはリダイレクトで維持
