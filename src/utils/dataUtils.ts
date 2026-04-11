@@ -81,14 +81,23 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
     return { midiInfo: null, error: "payload root must be an object" };
   }
 
-  const keys = Object.keys(parsed).sort();
-  if (keys.length !== 2 || keys[0] !== "compression" || keys[1] !== "data") {
+  const keys = Object.keys(parsed);
+  const requiredKeys = ["data", "compression"] as const;
+  const missingKeys = requiredKeys.filter((key) => !(key in parsed));
+  if (missingKeys.length > 0) {
     return {
       midiInfo: null,
-      error: "payload must contain only data and compression fields",
+      error: `payload is missing required field${missingKeys.length > 1 ? "s" : ""}: ${missingKeys.join(", ")}`,
     };
   }
 
+  const unknownKeys = keys.filter((key) => !requiredKeys.includes(key as (typeof requiredKeys)[number]));
+  if (unknownKeys.length > 0) {
+    return {
+      midiInfo: null,
+      error: `payload contains unknown field${unknownKeys.length > 1 ? "s" : ""}: ${unknownKeys.sort().join(", ")}`,
+    };
+  }
   if (typeof parsed.data !== "string" || parsed.data.length === 0) {
     return { midiInfo: null, error: "data must be a non-empty string" };
   }
