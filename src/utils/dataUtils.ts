@@ -8,7 +8,7 @@ export const MAX_DECOMPRESSED_MIDI_BYTES = 256 * 1024;
 export const MAX_DECOMPRESSION_RATIO = 40;
 
 const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/;
-const SUPPORTED_COMPRESSIONS = new Set<CompressionType>(["gzip", "lzma"]);
+const SUPPORTED_COMPRESSIONS = new Set(["gzip", "lzma"]);
 
 export type ValidatedMidiInfo = {
   data: string;
@@ -58,6 +58,14 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function isRequiredMidiInfoKey(key: string): key is "data" | "compression" {
+  return key === "data" || key === "compression";
+}
+
+function isCompressionType(value: unknown): value is CompressionType {
+  return typeof value === "string" && SUPPORTED_COMPRESSIONS.has(value);
+}
+
 function estimateBase64urlDecodedLength(data: string): number {
   return Math.floor((data.length * 3) / 4);
 }
@@ -87,7 +95,7 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
   }
 
   const keys = Object.keys(parsed);
-  const requiredKeys = ["data", "compression"] as const;
+  const requiredKeys = ["data", "compression"];
   const missingKeys = requiredKeys.filter((key) => !(key in parsed));
   if (missingKeys.length > 0) {
     return {
@@ -96,7 +104,7 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
     };
   }
 
-  const unknownKeys = keys.filter((key) => !requiredKeys.includes(key as (typeof requiredKeys)[number]));
+  const unknownKeys = keys.filter((key) => !isRequiredMidiInfoKey(key));
   if (unknownKeys.length > 0) {
     return {
       midiInfo: null,
@@ -111,10 +119,7 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
     return { midiInfo: null, error: "data must be base64url encoded" };
   }
 
-  if (
-    typeof parsed.compression !== "string" ||
-    !SUPPORTED_COMPRESSIONS.has(parsed.compression as CompressionType)
-  ) {
+  if (!isCompressionType(parsed.compression)) {
     return { midiInfo: null, error: "compression must be gzip or lzma" };
   }
 
@@ -129,7 +134,7 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
   return {
     midiInfo: {
       data: parsed.data,
-      compression: parsed.compression as CompressionType,
+      compression: parsed.compression,
     },
   };
 }
