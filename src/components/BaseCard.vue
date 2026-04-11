@@ -8,7 +8,7 @@
 import { computed } from "vue";
 
 interface Props {
-  size?: "lg" | "md" | "sm";
+  size?: "lg" | "sm";
   gradient?: boolean;
 }
 

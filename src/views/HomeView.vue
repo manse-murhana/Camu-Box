@@ -10,14 +10,14 @@
 
       <div class="feature-grid">
         <RouterLink class="feature-card-link" to="/player">
-          <BaseCard size="md" class="feature-card">
+          <BaseCard class="feature-card">
             <strong>Player</strong>
             <span>NFC タグから JSON を読み取り、MIDI を再生します。</span>
           </BaseCard>
         </RouterLink>
 
         <RouterLink class="feature-card-link" to="/writer">
-          <BaseCard size="md" class="feature-card">
+          <BaseCard class="feature-card">
             <strong>Writer</strong>
             <span>MIDI ファイルを圧縮して NFC タグに書き込みます。</span>
           </BaseCard>
