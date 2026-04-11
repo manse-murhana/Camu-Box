@@ -64,7 +64,7 @@ onBeforeUnmount(() => {
   <section class="page page-player">
     <BasePanel>
       <div class="player-header">
-        <h1>🎵 Camu-Box Player</h1>
+        <h1>▶️ Camu-Box Player</h1>
         <p class="subtitle">
           NFCタグを読み取り、書き込まれた音楽を再生します。
         </p>
@@ -104,7 +104,7 @@ onBeforeUnmount(() => {
         </button>
       </div>
 
-      <details class="log-container" open>
+      <details class="log-container">
         <summary>{{ store.summary }}</summary>
         <pre class="log-output">{{ store.logs.join("\n") }}</pre>
       </details>
