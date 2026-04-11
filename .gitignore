@@ -100,4 +100,5 @@ Thumbs.db
 *.p12
 *.csr
 *.pfx
-*.srlpackage-lock.json
+*.srl
+package-lock.json
