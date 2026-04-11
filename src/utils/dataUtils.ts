@@ -102,7 +102,7 @@ function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
     return { midiInfo: null, error: "data must be a non-empty string" };
   }
 
-  if (!BASE64URL_PATTERN.test(parsed.data)) {
+  if (!BASE64URL_PATTERN.test(parsed.data) || parsed.data.length % 4 === 1) {
     return { midiInfo: null, error: "data must be base64url encoded" };
   }
 

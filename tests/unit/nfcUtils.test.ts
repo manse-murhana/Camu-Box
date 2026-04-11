@@ -138,7 +138,7 @@ describe("nfcUtils", () => {
 
     expect(onJsonPayload).not.toHaveBeenCalled();
     expect(onLog).toHaveBeenCalledWith(
-      "NFC payload rejected: payload must contain only data and compression fields",
+      "NFC payload rejected: payload is missing required field: compression",
     );
   });
 
