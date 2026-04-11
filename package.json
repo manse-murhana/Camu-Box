@@ -1,24 +1,47 @@
 {
   "name": "midi2base64",
   "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "watch": "tsc -w -p tsconfig.json",
-    "lint": "npm run lint:js && npm run lint:html",
-    "lint:js": "eslint \"docs/**/scripts/*.{js,ts}\"",
-    "lint:html": "htmlhint \"docs/**/*.html\"",
-    "format": "prettier --write \"**/*.{js,ts,html,css,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,ts,html,css,json,md}\"",
-    "prepare": "husky"
+    "dev": "vite --host",
+    "build": "vue-tsc --noEmit && vite build",
+    "typecheck": "vue-tsc --noEmit",
+    "preview": "vite preview",
+    "watch": "vite build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "pnpm run lint:js && pnpm run lint:html",
+    "lint:js": "eslint \"src/**/*.ts\" \"vite.config.ts\"",
+    "lint:html": "htmlhint \"index.html\" \"public/**/*.html\"",
+    "format": "prettier --write \"**/*.{js,ts,vue,html,css,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,vue,html,css,json,md}\""
+  },
+  "dependencies": {
+    "@magenta/music": "1.23.1",
+    "@tonejs/midi": "2.0.28",
+    "buffer": "6.0.3",
+    "lzma": "2.3.2",
+    "pinia": "3.0.4",
+    "vue": "3.5.32",
+    "vue-router": "5.0.4"
   },
   "devDependencies": {
-    "@eslint/js": "^9.21.0",
-    "@typescript-eslint/parser": "^8.44.1",
-    "eslint": "^9.21.0",
-    "globals": "^15.14.0",
-    "htmlhint": "^1.6.3",
-    "husky": "^9.1.7",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.2"
+    "@eslint/js": "10.0.1",
+    "@typescript-eslint/parser": "8.58.1",
+    "@vitejs/plugin-basic-ssl": "2.3.0",
+    "@vitejs/plugin-vue": "6.0.5",
+    "@vitest/coverage-v8": "4.1.4",
+    "@vue/test-utils": "2.4.6",
+    "eslint": "10.2.0",
+    "globals": "17.4.0",
+    "htmlhint": "1.9.2",
+    "jsdom": "29.0.2",
+    "prettier": "3.8.2",
+    "typescript": "6.0.2",
+    "vite": "8.0.8",
+    "vitest": "4.1.4",
+    "vue-tsc": "3.2.6"
   }
 }

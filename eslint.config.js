@@ -1,34 +1,21 @@
-const js = require("@eslint/js");
-const globals = require("globals");
-const tsParser = require("@typescript-eslint/parser");
+import js from "@eslint/js";
+import globals from "globals";
+import tsParser from "@typescript-eslint/parser";
 
-module.exports = [
+export default [
   js.configs.recommended,
   {
     ignores: ["**/node_modules/**"],
   },
   {
-    files: ["docs/**/scripts/*.js"],
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: "script",
-      globals: {
-        ...globals.browser,
-        Midi: "readonly",
-        mm: "readonly",
-        LZMA: "readonly",
-        NDEFReader: "readonly",
-      },
-    },
-  },
-  {
-    files: ["docs/**/scripts/*.ts"],
+    files: ["src/**/*.ts", "vite.config.ts"],
     languageOptions: {
       parser: tsParser,
       ecmaVersion: 2022,
-      sourceType: "script",
+      sourceType: "module",
       globals: {
         ...globals.browser,
+        ...globals.node,
         Midi: "readonly",
         mm: "readonly",
         LZMA: "readonly",
