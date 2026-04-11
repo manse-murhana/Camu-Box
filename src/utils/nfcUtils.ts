@@ -1,4 +1,6 @@
-import type { MidiInfo, NdefMessageLike, NdefRecordLike } from "../types/web-music";
+import type { NdefMessageLike, NdefRecordLike } from "../types/web-music";
+
+import { validateMidiInfo } from "./dataUtils";
 
 export type NfcScanSession = {
   stop: () => void;
@@ -30,25 +32,6 @@ function decodeRecordData(record: NdefRecordLike): string | null {
   }
 }
 
-function parseNfcJsonPayload(text: string | null): MidiInfo | null {
-  if (!text) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(text);
-    if (typeof parsed?.data !== "string" || !parsed.data.trim()) {
-      return null;
-    }
-    return {
-      data: parsed.data,
-      compression: typeof parsed.compression === "string" ? parsed.compression : undefined,
-    };
-  } catch {
-    return null;
-  }
-}
-
 function extractMidiJsonFromMessage(
   message: NdefMessageLike,
   log: (message: string) => void,
@@ -65,9 +48,9 @@ function extractMidiJsonFromMessage(
   }
 
   const text = decodeRecordData(records[1]);
-  const midiInfo = parseNfcJsonPayload(text);
+  const { midiInfo, error } = validateMidiInfo(text ?? undefined);
   if (!midiInfo) {
-    log('NFC payload rejected: invalid JSON format (required: {"data":"..."})');
+    log(`NFC payload rejected: ${error ?? "invalid JSON format"}`);
     return null;
   }
 

@@ -11,6 +11,7 @@ import {
   isAsciiOnly,
   lzmaCompress,
   lzmaDecompress,
+  validateMidiInfo,
 } from "../../src/utils/dataUtils";
 
 describe("dataUtils", () => {
@@ -55,6 +56,22 @@ describe("dataUtils", () => {
     expect(extractMidiInfo("not json")).toBeNull();
     expect(extractMidiInfo('{"compression":"gzip"}')).toBeNull();
     expect(extractMidiInfo("   ")).toBeNull();
+  });
+
+  it("rejects base64url data with invalid length (length % 4 === 1)", () => {
+    // length 5 → 5 % 4 === 1 → invalid
+    const result = validateMidiInfo('{"data":"AAAAA","compression":"gzip"}');
+    expect(result.midiInfo).toBeNull();
+    expect(result.error).toBe("data must be base64url encoded");
+  });
+
+  it("accepts base64url data with valid lengths (length % 4 !== 1)", () => {
+    // length 2 → 2 % 4 === 2 → valid
+    expect(validateMidiInfo('{"data":"AA","compression":"gzip"}').midiInfo).not.toBeNull();
+    // length 3 → 3 % 4 === 3 → valid
+    expect(validateMidiInfo('{"data":"AAA","compression":"gzip"}').midiInfo).not.toBeNull();
+    // length 4 → 4 % 4 === 0 → valid
+    expect(validateMidiInfo('{"data":"AAAA","compression":"gzip"}').midiInfo).not.toBeNull();
   });
 
   it("throws when browser compression APIs are unavailable", () => {
