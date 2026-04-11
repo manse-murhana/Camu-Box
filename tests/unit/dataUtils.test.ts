@@ -8,10 +8,24 @@ import {
   ensureDecompressionStreamSupported,
   lzmaCompress,
   lzmaDecompress,
+  toErrorMessage,
   validateMidiInfo,
 } from "../../src/utils/dataUtils";
 
 describe("dataUtils", () => {
+  describe("toErrorMessage", () => {
+    it("returns the error message when given an Error instance", () => {
+      expect(toErrorMessage(new Error("something went wrong"))).toBe("something went wrong");
+    });
+
+    it("converts non-Error values to string", () => {
+      expect(toErrorMessage("raw string")).toBe("raw string");
+      expect(toErrorMessage(42)).toBe("42");
+      expect(toErrorMessage(null)).toBe("null");
+      expect(toErrorMessage(undefined)).toBe("undefined");
+    });
+  });
+
   it("encodes and decodes base64url", () => {
     const source = Uint8Array.from([0, 255, 16, 32, 45]);
 

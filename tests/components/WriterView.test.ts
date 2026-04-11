@@ -94,6 +94,8 @@ describe("WriterView", () => {
 
   it("disables NFC writing when Web NFC is unavailable", () => {
     writerViewMocks.nfcSupported = false;
+    storeState.hasData = true;
+    storeState.isWriting = false;
 
     const wrapper = mountWriterView();
     const writeButton = wrapper.get("button.nfc-start-btn");

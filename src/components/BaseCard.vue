@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const cardClasses = computed(() => {
-  const classes = [];
+  const classes: string[] = [];
 
   if (props.size === "sm") {
     classes.push("card-sm");
