@@ -193,7 +193,7 @@ export async function gzipDecompress(
   const chunks: Uint8Array[] = [];
   let totalSize = 0;
 
-  for (;;) {
+  while (true) {
     const { done, value } = await reader.read();
     if (done) break;
     totalSize += value.length;
