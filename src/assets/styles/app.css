@@ -318,6 +318,17 @@ button {
 
 /* .route-player width overrides removed — all pages use unified shell-main max-width */
 
+/* Fix: prevent viewport growth when NFC data loads on player screen */
+.route-player {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.route-player .shell-main {
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .player-header {
   text-align: center;
   margin-bottom: 30px;
