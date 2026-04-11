@@ -41,7 +41,7 @@ async function onDrop(event: DragEvent): Promise<void> {
 
 <template>
   <section class="page page-writer">
-    <div class="panel writer-panel">
+    <BasePanel>
       <div class="section-header">
         <div>
           <p class="eyebrow">Writer</p>
@@ -117,18 +117,18 @@ async function onDrop(event: DragEvent): Promise<void> {
         {{ store.statusMessage }}
       </div>
 
-      <div v-if="store.hasData" class="result-card">
+      <BaseCard v-if="store.hasData" class="result-card" gradient>
         <span>圧縮形式</span>
         <strong>{{ store.compressionType }}</strong>
         <span>必要な容量</span>
         <strong>{{ store.requiredBytes }} bytes</strong>
-      </div>
+      </BaseCard>
 
       <div class="action-row">
         <button class="danger-button" :disabled="!store.hasData || store.isWriting" @click="store.writeToNfc">
           {{ store.isWriting ? "書き込み中..." : "NFC に書き込み" }}
         </button>
       </div>
-    </div>
+    </BasePanel>
   </section>
 </template>
