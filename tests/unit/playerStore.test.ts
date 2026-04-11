@@ -5,12 +5,18 @@ import { usePlayerStore } from "../../src/stores/playerStore";
 import { magentaMusicMocks } from "../mocks/magentaMusic";
 
 const playerMocks = vi.hoisted(() => ({
+  MAX_COMPRESSED_MIDI_BYTES: 6 * 1024,
+  MAX_DECOMPRESSED_MIDI_BYTES: 256 * 1024,
+  MAX_DECOMPRESSION_RATIO: 40,
   base64urlDecode: vi.fn(() => Uint8Array.from([1, 2, 3])),
   detectAndDecodeText: vi.fn((value?: string) => value),
   extractMidiInfo: vi.fn(() => ({ data: "encoded-midi", compression: "gzip" })),
   gzipDecompress: vi.fn(async () => Uint8Array.from([11, 12, 13])),
   lzmaDecompress: vi.fn(async () => Uint8Array.from([21, 22, 23])),
   midiConstructor: vi.fn(),
+  validateMidiInfo: vi.fn<
+    (text?: string) => { midiInfo: { data: string; compression: "gzip" | "lzma" } | null; error?: string }
+  >(() => ({ midiInfo: { data: "encoded-midi", compression: "gzip" } })),
 }));
 
 const parsedMidi = vi.hoisted(() => ({
@@ -45,11 +51,15 @@ const parsedMidi = vi.hoisted(() => ({
 }));
 
 vi.mock("../../src/utils/dataUtils", () => ({
+  MAX_COMPRESSED_MIDI_BYTES: playerMocks.MAX_COMPRESSED_MIDI_BYTES,
+  MAX_DECOMPRESSED_MIDI_BYTES: playerMocks.MAX_DECOMPRESSED_MIDI_BYTES,
+  MAX_DECOMPRESSION_RATIO: playerMocks.MAX_DECOMPRESSION_RATIO,
   base64urlDecode: playerMocks.base64urlDecode,
   detectAndDecodeText: playerMocks.detectAndDecodeText,
   extractMidiInfo: playerMocks.extractMidiInfo,
   gzipDecompress: playerMocks.gzipDecompress,
   lzmaDecompress: playerMocks.lzmaDecompress,
+  validateMidiInfo: playerMocks.validateMidiInfo,
 }));
 
 vi.mock("@tonejs/midi", () => ({
@@ -66,6 +76,9 @@ describe("playerStore", () => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
     playerMocks.extractMidiInfo.mockReturnValue({ data: "encoded-midi", compression: "gzip" });
+    playerMocks.validateMidiInfo.mockReturnValue({
+      midiInfo: { data: "encoded-midi", compression: "gzip" },
+    });
     playerMocks.detectAndDecodeText.mockImplementation((value?: string) => value);
     playerMocks.gzipDecompress.mockResolvedValue(Uint8Array.from([11, 12, 13]));
     playerMocks.lzmaDecompress.mockResolvedValue(Uint8Array.from([21, 22, 23]));
@@ -92,11 +105,27 @@ describe("playerStore", () => {
 
   it("logs an error for unsupported compression", async () => {
     const store = usePlayerStore();
-    playerMocks.extractMidiInfo.mockReturnValue({ data: "encoded-midi", compression: "brotli" });
+    playerMocks.validateMidiInfo.mockReturnValue({
+      midiInfo: null,
+      error: "compression must be gzip or lzma",
+    });
 
     await store.loadMidiFromText('{"data":"encoded-midi","compression":"brotli"}');
 
-    expect(store.logs.at(-1)).toContain("Unsupported compression format");
+    expect(store.logs.at(-1)).toContain("compression must be gzip or lzma");
+  });
+
+  it("logs an error when the decompressed payload exceeds the size limit", async () => {
+    const store = usePlayerStore();
+    playerMocks.gzipDecompress.mockResolvedValue(
+      new Uint8Array(playerMocks.MAX_DECOMPRESSED_MIDI_BYTES + 1),
+    );
+
+    await store.loadMidiFromText('{"data":"encoded-midi","compression":"gzip"}');
+
+    expect(store.logs.at(-1)).toContain(
+      `Decompressed payload exceeds ${playerMocks.MAX_DECOMPRESSED_MIDI_BYTES} bytes`,
+    );
   });
 
   it("starts playback after loading a soundfont", async () => {

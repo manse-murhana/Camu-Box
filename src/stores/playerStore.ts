@@ -4,11 +4,14 @@ import { Midi } from "@tonejs/midi";
 import { SoundFontPlayer } from "@magenta/music";
 
 import {
+  MAX_COMPRESSED_MIDI_BYTES,
+  MAX_DECOMPRESSED_MIDI_BYTES,
+  MAX_DECOMPRESSION_RATIO,
   base64urlDecode,
   detectAndDecodeText,
-  extractMidiInfo,
   gzipDecompress,
   lzmaDecompress,
+  validateMidiInfo,
 } from "../utils/dataUtils";
 import { INSTRUMENT_NAMES } from "../utils/instruments";
 import type { NoteEvent, NoteSequence, SoundFontPlayerLike } from "../types/web-music";
@@ -120,9 +123,9 @@ export const usePlayerStore = defineStore("player", () => {
   }
 
   async function loadMidiFromText(text: string): Promise<void> {
-    const midiInfo = extractMidiInfo(text);
-    if (!midiInfo?.data) {
-      log("NFC text does not contain MIDI data");
+    const { midiInfo, error } = validateMidiInfo(text);
+    if (!midiInfo) {
+      log(`NFC text rejected: ${error ?? "invalid MIDI payload"}`);
       return;
     }
 
@@ -135,15 +138,24 @@ export const usePlayerStore = defineStore("player", () => {
 
       log("Decoding Base64url");
       const compressed = base64urlDecode(midiInfo.data);
+      if (compressed.length > MAX_COMPRESSED_MIDI_BYTES) {
+        throw new Error(`Compressed payload exceeds ${MAX_COMPRESSED_MIDI_BYTES} bytes`);
+      }
       log(`Compressed data: ${compressed.length} bytes`);
 
       let decompressed: Uint8Array;
       if (midiInfo.compression === "gzip") {
         decompressed = await gzipDecompress(compressed);
-      } else if (midiInfo.compression === "lzma") {
-        decompressed = await lzmaDecompress(compressed);
       } else {
-        throw new Error(`Unsupported compression format: ${midiInfo.compression ?? "missing"}`);
+        decompressed = await lzmaDecompress(compressed);
+      }
+
+      if (decompressed.length > MAX_DECOMPRESSED_MIDI_BYTES) {
+        throw new Error(`Decompressed payload exceeds ${MAX_DECOMPRESSED_MIDI_BYTES} bytes`);
+      }
+
+      if (compressed.length > 0 && decompressed.length / compressed.length > MAX_DECOMPRESSION_RATIO) {
+        throw new Error(`Decompression ratio exceeds ${MAX_DECOMPRESSION_RATIO}x`);
       }
 
       midiData.value = decompressed;

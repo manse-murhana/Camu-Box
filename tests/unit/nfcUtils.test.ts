@@ -112,6 +112,36 @@ describe("nfcUtils", () => {
     expect(onLog).toHaveBeenCalledWith("NFC payload rejected: not JSON media type");
   });
 
+  it("rejects payloads that do not match the strict schema", async () => {
+    const onLog = vi.fn();
+    const onJsonPayload = vi.fn<(jsonText: string) => Promise<void>>(async () => {});
+
+    vi.stubGlobal("NDEFReader", MockNDEFReader);
+
+    await startJsonNfcScan({
+      onLog,
+      onJsonPayload,
+    });
+
+    const reader = MockNDEFReader.instances[0];
+    await reader.onreading?.({
+      message: {
+        records: [
+          { data: new TextEncoder().encode("https://example.com") },
+          {
+            mediaType: "application/json",
+            data: new TextEncoder().encode('{"data":"encoded-midi","extra":true}'),
+          },
+        ],
+      },
+    });
+
+    expect(onJsonPayload).not.toHaveBeenCalled();
+    expect(onLog).toHaveBeenCalledWith(
+      "NFC payload rejected: payload must contain only data and compression fields",
+    );
+  });
+
   it("writes URL and JSON records to NFC", async () => {
     vi.stubGlobal("NDEFReader", MockNDEFReader);
 

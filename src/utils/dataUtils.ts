@@ -1,6 +1,19 @@
 import lzmaScriptUrl from "lzma/src/lzma_worker-min.js?url";
 
-import type { MidiInfo } from "../types/web-music";
+import type { CompressionType, MidiInfo } from "../types/web-music";
+
+export const MAX_NFC_JSON_LENGTH = 8 * 1024;
+export const MAX_COMPRESSED_MIDI_BYTES = 6 * 1024;
+export const MAX_DECOMPRESSED_MIDI_BYTES = 256 * 1024;
+export const MAX_DECOMPRESSION_RATIO = 40;
+
+const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/;
+const SUPPORTED_COMPRESSIONS = new Set<CompressionType>(["gzip", "lzma"]);
+
+export type MidiInfoParseResult = {
+  midiInfo: MidiInfo | null;
+  error?: string;
+};
 
 let lzmaLoadPromise: Promise<void> | null = null;
 
@@ -34,6 +47,77 @@ export function base64urlDecode(str: string): Uint8Array {
 export function base64urlEncode(uint8Array: Uint8Array): string {
   const base64 = btoa(String.fromCharCode(...uint8Array));
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function estimateBase64urlDecodedLength(data: string): number {
+  return Math.floor((data.length * 3) / 4);
+}
+
+function parseMidiInfoPayload(text?: string): MidiInfoParseResult {
+  const trimmed = text?.trim();
+  if (!trimmed) {
+    return { midiInfo: null, error: "payload is empty" };
+  }
+
+  if (trimmed.length > MAX_NFC_JSON_LENGTH) {
+    return {
+      midiInfo: null,
+      error: `payload exceeds ${MAX_NFC_JSON_LENGTH} characters`,
+    };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(trimmed);
+  } catch {
+    return { midiInfo: null, error: "payload is not valid JSON" };
+  }
+
+  if (!isRecord(parsed)) {
+    return { midiInfo: null, error: "payload root must be an object" };
+  }
+
+  const keys = Object.keys(parsed).sort();
+  if (keys.length !== 2 || keys[0] !== "compression" || keys[1] !== "data") {
+    return {
+      midiInfo: null,
+      error: "payload must contain only data and compression fields",
+    };
+  }
+
+  if (typeof parsed.data !== "string" || parsed.data.length === 0) {
+    return { midiInfo: null, error: "data must be a non-empty string" };
+  }
+
+  if (!BASE64URL_PATTERN.test(parsed.data)) {
+    return { midiInfo: null, error: "data must be base64url encoded" };
+  }
+
+  if (
+    typeof parsed.compression !== "string" ||
+    !SUPPORTED_COMPRESSIONS.has(parsed.compression as CompressionType)
+  ) {
+    return { midiInfo: null, error: "compression must be gzip or lzma" };
+  }
+
+  const estimatedCompressedSize = estimateBase64urlDecodedLength(parsed.data);
+  if (estimatedCompressedSize > MAX_COMPRESSED_MIDI_BYTES) {
+    return {
+      midiInfo: null,
+      error: `compressed payload exceeds ${MAX_COMPRESSED_MIDI_BYTES} bytes`,
+    };
+  }
+
+  return {
+    midiInfo: {
+      data: parsed.data,
+      compression: parsed.compression as CompressionType,
+    },
+  };
 }
 
 export function detectAndDecodeText(text?: string): string | undefined {
@@ -155,23 +239,9 @@ export async function lzmaDecompress(compressed: Uint8Array): Promise<Uint8Array
 }
 
 export function extractMidiInfo(text?: string): MidiInfo | null {
-  const trimmed = text?.trim();
-  if (!trimmed) {
-    return null;
-  }
+  return parseMidiInfoPayload(text).midiInfo;
+}
 
-  try {
-    const parsed = JSON.parse(trimmed);
-    if (typeof parsed?.data === "string") {
-      return {
-        data: parsed.data,
-        compression:
-          typeof parsed.compression === "string" ? parsed.compression : undefined,
-      };
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
+export function validateMidiInfo(text?: string): MidiInfoParseResult {
+  return parseMidiInfoPayload(text);
 }
