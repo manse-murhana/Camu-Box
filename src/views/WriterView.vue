@@ -108,11 +108,6 @@ async function onDrop(event: DragEvent): Promise<void> {
         </div>
       </label>
 
-      <label class="field-group">
-        <span>プレイヤー URL</span>
-        <input v-model="store.playerUrl" type="text" placeholder="https://example.com/#/player" />
-      </label>
-
       <div v-if="store.statusType !== 'idle'" class="status-box" :class="store.statusType">
         {{ store.statusMessage }}
       </div>

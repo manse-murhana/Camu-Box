@@ -16,7 +16,6 @@ const storeState = reactive({
   fileSize: 0,
   hasData: false,
   isWriting: false,
-  playerUrl: "https://example.com/#/player",
   requiredBytes: null as number | null,
   statusMessage: "",
   statusType: "idle",

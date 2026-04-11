@@ -201,29 +201,6 @@ button {
   border: none;
 }
 
-/* Legacy Support (deprecated - kept for backward compatibility only) */
-/* All legacy classes now use unified design system variables */
-.glass-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-lg);
-  backdrop-filter: blur(16px);
-  padding: var(--space-xl);
-}
-
-.hero-card {
-  max-width: 760px;
-}
-
-.player-panel {
-  /* deprecated - use BasePanel component instead */
-}
-
-.writer-panel {
-  /* deprecated - use BasePanel component instead */
-}
-
 .hero-section {
   /* max-width removed — unified via .panel */
 }
@@ -365,10 +342,6 @@ button {
 
 /* .route-player width overrides removed — all pages use unified shell-main max-width */
 
-.page-player {
-  /* page-player is now using the standard BasePanel layout */
-}
-
 .player-header {
   text-align: center;
   margin-bottom: 30px;
@@ -490,55 +463,6 @@ button {
   min-width: 92px;
   padding: 14px 32px;
   font-size: 20px;
-}
-
-.player-panel-legacy .log-container {
-  border-radius: 12px;
-  background: #f7fafc;
-  border: 1px solid #e2e8f0;
-}
-
-.player-panel-legacy .log-container summary {
-  padding: 12px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4a5568;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.player-panel-legacy .log-container summary:hover {
-  background: #edf2f7;
-}
-
-.player-panel-legacy .log-output {
-  max-height: 200px;
-  padding: 16px;
-  font-size: 12px;
-  line-height: 1.6;
-  color: #4a5568;
-  background: #f7fafc;
-  border-top: 1px solid #e2e8f0;
-  white-space: pre-wrap;
-}
-
-.player-panel-legacy .log-output::-webkit-scrollbar {
-  width: 6px;
-}
-
-.player-panel-legacy .log-output::-webkit-scrollbar-track {
-  background: #edf2f7;
-  border-radius: 3px;
-}
-
-.player-panel-legacy .log-output::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
-}
-
-.player-panel-legacy .log-output::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
 }
 
 .log-container {
@@ -673,12 +597,6 @@ button {
 
   .shell-nav {
     justify-content: center;
-  }
-
-  .hero-card,
-  .player-panel,
-  .writer-panel {
-    padding: var(--space-lg);
   }
 
   .player-header h1 {

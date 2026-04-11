@@ -21,7 +21,6 @@ export const useWriterStore = defineStore("writer", () => {
   const requiredBytes = ref<number | null>(null);
   const currentJsonData = ref<string | null>(null);
   const sourceMidiBytes = ref<number[] | null>(null);
-  const playerUrl = ref(getDefaultPlayerUrl());
   const statusMessage = ref("");
   const statusType = ref<StatusType>("idle");
   const isWriting = ref(false);
@@ -111,7 +110,7 @@ export const useWriterStore = defineStore("writer", () => {
     try {
       isWriting.value = true;
       setStatus("NFCタグに接触してください...", "processing");
-      await writeJsonToNfc(currentJsonData.value, playerUrl.value.trim() || getDefaultPlayerUrl());
+      await writeJsonToNfc(currentJsonData.value, getDefaultPlayerUrl());
       setStatus("NFCタグへの書き込みが完了しました", "success");
     } catch (error: unknown) {
       const errorName = error instanceof Error ? error.name : "";
@@ -141,7 +140,6 @@ export const useWriterStore = defineStore("writer", () => {
     fileSize,
     hasData,
     isWriting,
-    playerUrl,
     requiredBytes,
     setCompressionType,
     statusMessage,
