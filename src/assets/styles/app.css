@@ -571,7 +571,8 @@ p {
 }
 
 .info-item,
-.field-group input {
+.field-group input,
+.field-group select {
   background: rgba(255, 255, 255, 0.78);
   border-radius: 16px;
 }
@@ -590,10 +591,38 @@ p {
   font-size: 0.9rem;
 }
 
-.field-group input {
+.field-group input,
+.field-group select {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 16px;
+  color: var(--ink);
+}
+
+.radio-option input {
+  width: auto;
+  margin: 0;
+}
+
+.radio-option span {
+  color: inherit;
+  font-size: 0.95rem;
 }
 
 .status-box {

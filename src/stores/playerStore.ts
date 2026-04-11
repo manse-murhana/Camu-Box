@@ -137,10 +137,14 @@ export const usePlayerStore = defineStore("player", () => {
       const compressed = base64urlDecode(midiInfo.data);
       log(`Compressed data: ${compressed.length} bytes`);
 
-      const decompressed =
-        midiInfo.compression === "gzip"
-          ? await gzipDecompress(compressed)
-          : await lzmaDecompress(compressed);
+      let decompressed: Uint8Array;
+      if (midiInfo.compression === "gzip") {
+        decompressed = await gzipDecompress(compressed);
+      } else if (midiInfo.compression === "lzma") {
+        decompressed = await lzmaDecompress(compressed);
+      } else {
+        throw new Error(`Unsupported compression format: ${midiInfo.compression ?? "missing"}`);
+      }
 
       midiData.value = decompressed;
       log(`Decompressed data: ${decompressed.length} bytes`);

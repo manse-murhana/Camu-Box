@@ -1,3 +1,5 @@
+export type CompressionType = "gzip" | "lzma";
+
 export type MidiInfo = {
   data: string;
   compression?: string;

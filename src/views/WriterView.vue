@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+import type { CompressionType } from "../types/web-music";
 import { useWriterStore } from "../stores/writerStore";
 
 const store = useWriterStore();
 const inputRef = ref<HTMLInputElement | null>(null);
 const dragOver = ref(false);
+
+async function onCompressionChange(event: Event): Promise<void> {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement)) {
+    return;
+  }
+
+  await store.setCompressionType(target.value as CompressionType);
+}
 
 async function handleFile(file: File | null): Promise<void> {
   if (!file) {
@@ -40,7 +50,7 @@ async function onDrop(event: DragEvent): Promise<void> {
       </div>
 
       <p class="subtitle copy-block">
-        MIDI ファイルを読み込み、LZMA 圧縮した JSON として NFC タグに書き込みます。
+        MIDI ファイルを読み込み、gzip または LZMA 圧縮した JSON として NFC タグに書き込みます。
       </p>
 
       <button
@@ -71,6 +81,34 @@ async function onDrop(event: DragEvent): Promise<void> {
       </div>
 
       <label class="field-group">
+        <span>圧縮形式</span>
+        <div class="radio-group" role="radiogroup" aria-label="圧縮形式">
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="compressionType"
+              value="gzip"
+              :checked="store.compressionType === 'gzip'"
+              :disabled="store.isWriting"
+              @change="onCompressionChange"
+            />
+            <span>gzip</span>
+          </label>
+          <label class="radio-option">
+            <input
+              type="radio"
+              name="compressionType"
+              value="lzma"
+              :checked="store.compressionType === 'lzma'"
+              :disabled="store.isWriting"
+              @change="onCompressionChange"
+            />
+            <span>lzma</span>
+          </label>
+        </div>
+      </label>
+
+      <label class="field-group">
         <span>プレイヤー URL</span>
         <input v-model="store.playerUrl" type="text" placeholder="https://example.com/#/player" />
       </label>
@@ -80,6 +118,8 @@ async function onDrop(event: DragEvent): Promise<void> {
       </div>
 
       <div v-if="store.hasData" class="result-card">
+        <span>圧縮形式</span>
+        <strong>{{ store.compressionType }}</strong>
         <span>必要な容量</span>
         <strong>{{ store.requiredBytes }} bytes</strong>
       </div>

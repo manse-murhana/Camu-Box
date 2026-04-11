@@ -2,7 +2,9 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { Midi } from "@tonejs/midi";
 
-import { base64urlEncode, lzmaCompress } from "../utils/dataUtils";
+import type { CompressionType } from "../types/web-music";
+
+import { base64urlEncode, gzipCompress, lzmaCompress } from "../utils/dataUtils";
 import { writeJsonToNfc } from "../utils/nfcUtils";
 import { getDefaultPlayerUrl } from "../utils/playerUrl";
 
@@ -13,10 +15,12 @@ function toErrorMessage(error: unknown): string {
 }
 
 export const useWriterStore = defineStore("writer", () => {
+  const compressionType = ref<CompressionType>("lzma");
   const fileName = ref("");
   const fileSize = ref(0);
   const requiredBytes = ref<number | null>(null);
   const currentJsonData = ref<string | null>(null);
+  const sourceMidiBytes = ref<number[] | null>(null);
   const playerUrl = ref(getDefaultPlayerUrl());
   const statusMessage = ref("");
   const statusType = ref<StatusType>("idle");
@@ -27,6 +31,30 @@ export const useWriterStore = defineStore("writer", () => {
   function setStatus(message: string, type: StatusType): void {
     statusMessage.value = message;
     statusType.value = type;
+  }
+
+  async function createJsonData(serializedMidi: Uint8Array): Promise<string> {
+    const compressed =
+      compressionType.value === "gzip"
+        ? await gzipCompress(serializedMidi)
+        : await lzmaCompress(serializedMidi);
+    const encoded = base64urlEncode(compressed);
+    return JSON.stringify({
+      data: encoded,
+      compression: compressionType.value,
+    });
+  }
+
+  async function refreshJsonData(): Promise<void> {
+    if (!sourceMidiBytes.value) {
+      currentJsonData.value = null;
+      requiredBytes.value = null;
+      return;
+    }
+
+    const jsonString = await createJsonData(Uint8Array.from(sourceMidiBytes.value));
+    currentJsonData.value = jsonString;
+    requiredBytes.value = jsonString.length;
   }
 
   async function processMidiFile(file: File): Promise<void> {
@@ -47,17 +75,28 @@ export const useWriterStore = defineStore("writer", () => {
 
       const arrayBuffer = await file.arrayBuffer();
       const midi = new Midi(new Uint8Array(arrayBuffer));
-      const serializedMidi = midi.toArray();
-      const compressed = await lzmaCompress(serializedMidi);
-      const encoded = base64urlEncode(compressed);
-      const jsonString = JSON.stringify({
-        data: encoded,
-        compression: "lzma",
-      });
-
-      currentJsonData.value = jsonString;
-      requiredBytes.value = jsonString.length;
+      sourceMidiBytes.value = Array.from(midi.toArray());
+      await refreshJsonData();
       setStatus("変換完了", "success");
+    } catch (error: unknown) {
+      setStatus(`エラー: ${toErrorMessage(error)}`, "error");
+    }
+  }
+
+  async function setCompressionType(nextCompressionType: CompressionType): Promise<void> {
+    if (compressionType.value === nextCompressionType) {
+      return;
+    }
+
+    compressionType.value = nextCompressionType;
+    if (!sourceMidiBytes.value) {
+      return;
+    }
+
+    try {
+      setStatus("再圧縮中...", "processing");
+      await refreshJsonData();
+      setStatus("圧縮形式を更新しました", "success");
     } catch (error: unknown) {
       setStatus(`エラー: ${toErrorMessage(error)}`, "error");
     }
@@ -96,6 +135,7 @@ export const useWriterStore = defineStore("writer", () => {
   }
 
   return {
+    compressionType,
     currentJsonData,
     fileName,
     fileSize,
@@ -103,6 +143,7 @@ export const useWriterStore = defineStore("writer", () => {
     isWriting,
     playerUrl,
     requiredBytes,
+    setCompressionType,
     statusMessage,
     statusType,
     processMidiFile,
