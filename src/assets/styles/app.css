@@ -573,6 +573,22 @@ button {
   color: #b91c1c;
 }
 
+.page-writer .field-group {
+  margin-top: var(--space-lg);
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: center;
+  text-align: center;
+}
+
+.page-writer .radio-group {
+  justify-content: center;
+}
+
+.page-writer .action-row {
+  justify-content: center;
+}
+
 .page-footer {
   display: flex;
   justify-content: center;

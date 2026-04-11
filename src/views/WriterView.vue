@@ -42,16 +42,12 @@ async function onDrop(event: DragEvent): Promise<void> {
 <template>
   <section class="page page-writer">
     <BasePanel>
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Writer</p>
-          <h1>NFC Encoder</h1>
-        </div>
+      <div class="player-header">
+        <h1>📝 Camu-Box Writer</h1>
+        <p class="subtitle">
+          MIDI ファイルをNFC タグに書き込み、Player で再生できるようにします。
+        </p>
       </div>
-
-      <p class="subtitle copy-block">
-        MIDI ファイルを読み込み、gzip または LZMA 圧縮した JSON として NFC タグに書き込みます。
-      </p>
 
       <button
         class="upload-area"
