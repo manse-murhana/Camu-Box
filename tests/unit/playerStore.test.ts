@@ -10,10 +10,10 @@ const playerMocks = vi.hoisted(() => ({
   MAX_DECOMPRESSION_RATIO: 40,
   base64urlDecode: vi.fn(() => Uint8Array.from([1, 2, 3])),
   detectAndDecodeText: vi.fn((value?: string) => value),
-  extractMidiInfo: vi.fn(() => ({ data: "encoded-midi", compression: "gzip" })),
   gzipDecompress: vi.fn(async () => Uint8Array.from([11, 12, 13])),
   lzmaDecompress: vi.fn(async () => Uint8Array.from([21, 22, 23])),
   midiConstructor: vi.fn(),
+  toErrorMessage: vi.fn((error: unknown) => (error instanceof Error ? error.message : String(error))),
   validateMidiInfo: vi.fn<
     (text?: string) => { midiInfo: { data: string; compression: "gzip" | "lzma" } | null; error?: string }
   >(() => ({ midiInfo: { data: "encoded-midi", compression: "gzip" } })),
@@ -56,9 +56,9 @@ vi.mock("../../src/utils/dataUtils", () => ({
   MAX_DECOMPRESSION_RATIO: playerMocks.MAX_DECOMPRESSION_RATIO,
   base64urlDecode: playerMocks.base64urlDecode,
   detectAndDecodeText: playerMocks.detectAndDecodeText,
-  extractMidiInfo: playerMocks.extractMidiInfo,
   gzipDecompress: playerMocks.gzipDecompress,
   lzmaDecompress: playerMocks.lzmaDecompress,
+  toErrorMessage: playerMocks.toErrorMessage,
   validateMidiInfo: playerMocks.validateMidiInfo,
 }));
 
@@ -75,7 +75,6 @@ describe("playerStore", () => {
   beforeEach(() => {
     setActivePinia(createPinia());
     vi.clearAllMocks();
-    playerMocks.extractMidiInfo.mockReturnValue({ data: "encoded-midi", compression: "gzip" });
     playerMocks.validateMidiInfo.mockReturnValue({
       midiInfo: { data: "encoded-midi", compression: "gzip" },
     });

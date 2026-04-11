@@ -1,24 +1,29 @@
 <template>
   <section class="page home-page">
-    <div class="hero-card glass-card">
-      <p class="eyebrow">Vue Migration</p>
-      <h1>Camu-Box</h1>
-      <p class="lead">
-        NFC タグに MIDI を保存して、ブラウザで読み込み・再生するためのツールです。
-      </p>
+    <BasePanel class="hero-section">
+      <div class="player-header">
+        <h1>🎵 Camu-Box</h1>
+        <p class="subtitle">
+          NFC タグに MIDI を保存して、ブラウザで読み込み・再生するためのツールです。
+        </p>
+      </div>
 
       <div class="feature-grid">
-        <RouterLink class="feature-card" to="/player">
-          <strong>Player</strong>
-          <span>NFC タグから JSON を読み取り、MIDI を再生します。</span>
+        <RouterLink class="feature-card-link" to="/player">
+          <BaseCard class="feature-card">
+            <strong>Player</strong>
+            <span>NFC タグから JSON を読み取り、MIDI を再生します。</span>
+          </BaseCard>
         </RouterLink>
 
-        <RouterLink class="feature-card" to="/writer">
-          <strong>Writer</strong>
-          <span>MIDI ファイルを圧縮して NFC タグに書き込みます。</span>
+        <RouterLink class="feature-card-link" to="/writer">
+          <BaseCard class="feature-card">
+            <strong>Writer</strong>
+            <span>MIDI ファイルを圧縮して NFC タグに書き込みます。</span>
+          </BaseCard>
         </RouterLink>
       </div>
-    </div>
+    </BasePanel>
   </section>
 </template>
 

@@ -11,14 +11,11 @@ import {
   detectAndDecodeText,
   gzipDecompress,
   lzmaDecompress,
+  toErrorMessage,
   validateMidiInfo,
 } from "../utils/dataUtils";
 import { INSTRUMENT_NAMES } from "../utils/instruments";
 import type { NoteEvent, NoteSequence, SoundFontPlayerLike } from "../types/web-music";
-
-function toErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
-}
 
 export const usePlayerStore = defineStore("player", () => {
   const midiData = ref<Uint8Array | null>(null);

@@ -7,6 +7,7 @@ const writerMocks = vi.hoisted(() => ({
   gzipCompress: vi.fn(async () => Uint8Array.from([1, 2, 3])),
   lzmaCompress: vi.fn(async () => Uint8Array.from([4, 5, 6])),
   base64urlEncode: vi.fn(() => "encoded-midi"),
+  toErrorMessage: vi.fn((error: unknown) => (error instanceof Error ? error.message : String(error))),
   writeJsonToNfc: vi.fn(async () => {}),
   getDefaultPlayerUrl: vi.fn(() => "https://example.com/#/player"),
   midiConstructor: vi.fn(),
@@ -17,6 +18,7 @@ vi.mock("../../src/utils/dataUtils", () => ({
   base64urlEncode: writerMocks.base64urlEncode,
   gzipCompress: writerMocks.gzipCompress,
   lzmaCompress: writerMocks.lzmaCompress,
+  toErrorMessage: writerMocks.toErrorMessage,
 }));
 
 vi.mock("../../src/utils/nfcUtils", () => ({

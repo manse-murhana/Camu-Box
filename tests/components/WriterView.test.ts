@@ -8,6 +8,7 @@ const writerViewMocks = vi.hoisted(() => ({
   processMidiFile: vi.fn(async () => {}),
   setCompressionType: vi.fn(async () => {}),
   writeToNfc: vi.fn(async () => {}),
+  nfcSupported: true,
 }));
 
 const storeState = reactive({
@@ -16,7 +17,6 @@ const storeState = reactive({
   fileSize: 0,
   hasData: false,
   isWriting: false,
-  playerUrl: "https://example.com/#/player",
   requiredBytes: null as number | null,
   statusMessage: "",
   statusType: "idle",
@@ -29,6 +29,27 @@ const storeState = reactive({
 vi.mock("../../src/stores/writerStore", () => ({
   useWriterStore: () => storeState,
 }));
+
+vi.mock("../../src/composables/useWebNfcSupport", () => ({
+  useWebNfcSupport: () => ({
+    nfcSupported: writerViewMocks.nfcSupported,
+    nfcSupportMessage: writerViewMocks.nfcSupported
+      ? "このブラウザで利用可能です"
+      : "Android, Google Chromeにのみ対応しています",
+  }),
+}));
+
+function mountWriterView() {
+  return mount(WriterView, {
+    global: {
+      stubs: {
+        RouterLink: {
+          template: "<a><slot /></a>",
+        },
+      },
+    },
+  });
+}
 
 describe("WriterView", () => {
   beforeEach(() => {
@@ -43,10 +64,11 @@ describe("WriterView", () => {
     writerViewMocks.processMidiFile.mockClear();
     writerViewMocks.setCompressionType.mockClear();
     writerViewMocks.writeToNfc.mockClear();
+    writerViewMocks.nfcSupported = true;
   });
 
   it("passes the selected file to the store", async () => {
-    const wrapper = mount(WriterView);
+    const wrapper = mountWriterView();
     const file = new File([Uint8Array.from([1, 2, 3])], "song.mid", { type: "audio/midi" });
     const input = wrapper.get("input[type='file']");
 
@@ -60,13 +82,25 @@ describe("WriterView", () => {
   });
 
   it("updates the compression type and forwards NFC writes", async () => {
-    const wrapper = mount(WriterView);
+    const wrapper = mountWriterView();
     storeState.hasData = true;
 
     await wrapper.get("input[value='gzip']").setValue(true);
-    await wrapper.get("button.danger-button").trigger("click");
+    await wrapper.get("button.nfc-start-btn").trigger("click");
 
     expect(writerViewMocks.setCompressionType).toHaveBeenCalledWith("gzip");
     expect(writerViewMocks.writeToNfc).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables NFC writing when Web NFC is unavailable", () => {
+    writerViewMocks.nfcSupported = false;
+    storeState.hasData = true;
+    storeState.isWriting = false;
+
+    const wrapper = mountWriterView();
+    const writeButton = wrapper.get("button.nfc-start-btn");
+
+    expect(writeButton.attributes("disabled")).toBeDefined();
+    expect(wrapper.text()).toContain("Android, Google Chromeにのみ対応しています");
   });
 });

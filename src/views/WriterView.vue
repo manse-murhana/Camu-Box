@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { RouterLink } from "vue-router";
 
 import type { CompressionType } from "../types/web-music";
 import { useWriterStore } from "../stores/writerStore";
+import { useWebNfcSupport } from "../composables/useWebNfcSupport";
 
 const store = useWriterStore();
 const inputRef = ref<HTMLInputElement | null>(null);
 const dragOver = ref(false);
+const { nfcSupported, nfcSupportMessage } = useWebNfcSupport();
 
 async function onCompressionChange(event: Event): Promise<void> {
   const target = event.target;
@@ -41,17 +44,16 @@ async function onDrop(event: DragEvent): Promise<void> {
 
 <template>
   <section class="page page-writer">
-    <div class="panel writer-panel">
-      <div class="section-header">
-        <div>
-          <p class="eyebrow">Writer</p>
-          <h1>NFC Encoder</h1>
-        </div>
+    <BasePanel>
+      <div class="player-header">
+        <h1>📝 Camu-Box Writer</h1>
+        <p class="subtitle">
+          MIDI ファイルをNFC タグに書き込み、Player で再生できるようにします。
+        </p>
+        <p class="nfc-hint" :class="nfcSupported ? 'ok' : 'warning'">
+          {{ nfcSupportMessage }}
+        </p>
       </div>
-
-      <p class="subtitle copy-block">
-        MIDI ファイルを読み込み、gzip または LZMA 圧縮した JSON として NFC タグに書き込みます。
-      </p>
 
       <button
         class="upload-area"
@@ -108,27 +110,30 @@ async function onDrop(event: DragEvent): Promise<void> {
         </div>
       </label>
 
-      <label class="field-group">
-        <span>プレイヤー URL</span>
-        <input v-model="store.playerUrl" type="text" placeholder="https://example.com/#/player" />
-      </label>
-
       <div v-if="store.statusType !== 'idle'" class="status-box" :class="store.statusType">
         {{ store.statusMessage }}
       </div>
 
-      <div v-if="store.hasData" class="result-card">
+      <BaseCard v-if="store.hasData" class="result-card" gradient>
         <span>圧縮形式</span>
         <strong>{{ store.compressionType }}</strong>
         <span>必要な容量</span>
         <strong>{{ store.requiredBytes }} bytes</strong>
-      </div>
+      </BaseCard>
 
       <div class="action-row">
-        <button class="danger-button" :disabled="!store.hasData || store.isWriting" @click="store.writeToNfc">
+        <button
+          :class="['nfc-start-btn', store.isWriting ? 'secondary-button' : 'primary-button', { 'scan-active': store.isWriting }]"
+          :disabled="!nfcSupported || !store.hasData || store.isWriting"
+          @click="store.writeToNfc"
+        >
           {{ store.isWriting ? "書き込み中..." : "NFC に書き込み" }}
         </button>
+        <p class="nfc-warning">
+          利用前に <RouterLink to="/terms">規約</RouterLink>
+          を確認してください。
+        </p>
       </div>
-    </div>
+    </BasePanel>
   </section>
 </template>

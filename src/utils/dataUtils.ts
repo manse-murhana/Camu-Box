@@ -1,6 +1,6 @@
 import lzmaScriptUrl from "lzma/src/lzma_worker-min.js?url";
 
-import type { CompressionType, MidiInfo } from "../types/web-music";
+import type { CompressionType } from "../types/web-music";
 
 export const MAX_NFC_JSON_LENGTH = 8 * 1024;
 export const MAX_COMPRESSED_MIDI_BYTES = 6 * 1024;
@@ -20,9 +20,13 @@ export type MidiInfoParseResult = {
   error?: string;
 };
 
+export function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 let lzmaLoadPromise: Promise<void> | null = null;
 
-export function isAsciiOnly(text: string): boolean {
+function isAsciiOnly(text: string): boolean {
   for (const char of text) {
     if (char.charCodeAt(0) > 0x7f) {
       return false;
@@ -31,7 +35,7 @@ export function isAsciiOnly(text: string): boolean {
   return true;
 }
 
-export function countControlChars(text: string): number {
+function countControlChars(text: string): number {
   let count = 0;
   for (const char of text) {
     const code = char.charCodeAt(0);
@@ -292,28 +296,6 @@ export async function lzmaDecompress(
       resolve(decoded);
     });
   });
-}
-
-export function extractMidiInfo(text?: string): MidiInfo | null {
-  const trimmed = text?.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(trimmed);
-    if (typeof parsed?.data === "string") {
-      return {
-        data: parsed.data,
-        compression:
-          typeof parsed.compression === "string" ? parsed.compression : undefined,
-      };
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
 }
 
 export function validateMidiInfo(text?: string): MidiInfoParseResult {
