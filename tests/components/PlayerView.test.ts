@@ -11,7 +11,7 @@ const playerViewMocks = vi.hoisted(() => ({
   stopPlayback: vi.fn(),
   stopScan: vi.fn(),
   startJsonNfcScan: vi.fn(),
-  isWebNfcAvailable: vi.fn(() => true),
+  nfcSupported: true,
   applyTheme: vi.fn(),
 }));
 
@@ -39,7 +39,15 @@ vi.mock("../../src/stores/playerStore", () => ({
 
 vi.mock("../../src/utils/nfcUtils", () => ({
   startJsonNfcScan: playerViewMocks.startJsonNfcScan,
-  isWebNfcAvailable: playerViewMocks.isWebNfcAvailable,
+}));
+
+vi.mock("../../src/composables/useWebNfcSupport", () => ({
+  useWebNfcSupport: () => ({
+    nfcSupported: playerViewMocks.nfcSupported,
+    nfcSupportMessage: playerViewMocks.nfcSupported
+      ? "このブラウザで利用可能です"
+      : "Android, Google Chromeにのみ対応しています",
+  }),
 }));
 
 vi.mock("../../src/utils/themes", () => ({
@@ -73,7 +81,7 @@ describe("PlayerView", () => {
     playerViewMocks.startPlayback.mockClear();
     playerViewMocks.stopPlayback.mockClear();
     playerViewMocks.startJsonNfcScan.mockReset();
-    playerViewMocks.isWebNfcAvailable.mockReturnValue(true);
+    playerViewMocks.nfcSupported = true;
     playerViewMocks.applyTheme.mockClear();
     playerViewMocks.stopScan.mockClear();
     playerViewMocks.startJsonNfcScan.mockImplementation(async ({ onStateChange }) => {
@@ -93,12 +101,12 @@ describe("PlayerView", () => {
   });
 
   it("disables scanning when Web NFC is unavailable", () => {
-    playerViewMocks.isWebNfcAvailable.mockReturnValue(false);
+    playerViewMocks.nfcSupported = false;
 
     const wrapper = mountPlayerView();
 
     expect(wrapper.get("button").attributes("disabled")).toBeDefined();
-    expect(wrapper.text()).toContain("Web NFC Unsupported");
+    expect(wrapper.text()).toContain("Android, Google Chromeにのみ対応しています");
   });
 
   it("stops scanning and playback when unmounted", async () => {

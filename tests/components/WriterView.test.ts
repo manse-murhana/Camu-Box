@@ -8,6 +8,7 @@ const writerViewMocks = vi.hoisted(() => ({
   processMidiFile: vi.fn(async () => {}),
   setCompressionType: vi.fn(async () => {}),
   writeToNfc: vi.fn(async () => {}),
+  nfcSupported: true,
 }));
 
 const storeState = reactive({
@@ -29,6 +30,15 @@ vi.mock("../../src/stores/writerStore", () => ({
   useWriterStore: () => storeState,
 }));
 
+vi.mock("../../src/composables/useWebNfcSupport", () => ({
+  useWebNfcSupport: () => ({
+    nfcSupported: writerViewMocks.nfcSupported,
+    nfcSupportMessage: writerViewMocks.nfcSupported
+      ? "このブラウザで利用可能です"
+      : "Android, Google Chromeにのみ対応しています",
+  }),
+}));
+
 describe("WriterView", () => {
   beforeEach(() => {
     storeState.compressionType = "lzma";
@@ -42,6 +52,7 @@ describe("WriterView", () => {
     writerViewMocks.processMidiFile.mockClear();
     writerViewMocks.setCompressionType.mockClear();
     writerViewMocks.writeToNfc.mockClear();
+    writerViewMocks.nfcSupported = true;
   });
 
   it("passes the selected file to the store", async () => {
@@ -67,5 +78,15 @@ describe("WriterView", () => {
 
     expect(writerViewMocks.setCompressionType).toHaveBeenCalledWith("gzip");
     expect(writerViewMocks.writeToNfc).toHaveBeenCalledTimes(1);
+  });
+
+  it("disables NFC writing when Web NFC is unavailable", () => {
+    writerViewMocks.nfcSupported = false;
+
+    const wrapper = mount(WriterView);
+    const writeButton = wrapper.get("button.danger-button");
+
+    expect(writeButton.attributes("disabled")).toBeDefined();
+    expect(wrapper.text()).toContain("Android, Google Chromeにのみ対応しています");
   });
 });

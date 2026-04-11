@@ -3,10 +3,12 @@ import { ref } from "vue";
 
 import type { CompressionType } from "../types/web-music";
 import { useWriterStore } from "../stores/writerStore";
+import { useWebNfcSupport } from "../composables/useWebNfcSupport";
 
 const store = useWriterStore();
 const inputRef = ref<HTMLInputElement | null>(null);
 const dragOver = ref(false);
+const { nfcSupported, nfcSupportMessage } = useWebNfcSupport();
 
 async function onCompressionChange(event: Event): Promise<void> {
   const target = event.target;
@@ -46,6 +48,9 @@ async function onDrop(event: DragEvent): Promise<void> {
         <h1>📝 Camu-Box Writer</h1>
         <p class="subtitle">
           MIDI ファイルをNFC タグに書き込み、Player で再生できるようにします。
+        </p>
+        <p class="nfc-hint" :class="nfcSupported ? 'ok' : 'warning'">
+          {{ nfcSupportMessage }}
         </p>
       </div>
 
@@ -116,7 +121,11 @@ async function onDrop(event: DragEvent): Promise<void> {
       </BaseCard>
 
       <div class="action-row">
-        <button class="danger-button" :disabled="!store.hasData || store.isWriting" @click="store.writeToNfc">
+        <button
+          class="danger-button"
+          :disabled="!nfcSupported || !store.hasData || store.isWriting"
+          @click="store.writeToNfc"
+        >
           {{ store.isWriting ? "書き込み中..." : "NFC に書き込み" }}
         </button>
       </div>

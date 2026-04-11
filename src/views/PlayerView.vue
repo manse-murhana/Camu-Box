@@ -3,13 +3,14 @@ import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 import { usePlayerStore } from "../stores/playerStore";
-import { startJsonNfcScan, type NfcScanSession, isWebNfcAvailable } from "../utils/nfcUtils";
+import { startJsonNfcScan, type NfcScanSession } from "../utils/nfcUtils";
 import { toErrorMessage } from "../utils/dataUtils";
 import { applyTheme } from "../utils/themes";
+import { useWebNfcSupport } from "../composables/useWebNfcSupport";
 
 const store = usePlayerStore();
 const scanning = ref(false);
-const nfcSupported = computed(() => isWebNfcAvailable());
+const { nfcSupported, nfcSupportMessage } = useWebNfcSupport();
 const scanButtonLabel = computed(() => (scanning.value ? "読み取りを停止" : "タグを読み取る"));
 let scanSession: NfcScanSession | null = null;
 
@@ -68,7 +69,7 @@ onBeforeUnmount(() => {
           NFCタグを読み取り、書き込まれた音楽を再生します。
         </p>
         <p class="nfc-hint" :class="nfcSupported ? 'ok' : 'warning'">
-          {{ nfcSupported ? "Web NFC Ready" : "Web NFC Unsupported" }}
+          {{ nfcSupportMessage }}
         </p>
       </div>
 
