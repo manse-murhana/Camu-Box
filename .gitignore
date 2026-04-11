@@ -101,4 +101,3 @@ Thumbs.db
 *.csr
 *.pfx
 *.srl
-package-lock.json
