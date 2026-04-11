@@ -10,8 +10,13 @@ export const MAX_DECOMPRESSION_RATIO = 40;
 const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/;
 const SUPPORTED_COMPRESSIONS = new Set<CompressionType>(["gzip", "lzma"]);
 
+export type ValidatedMidiInfo = {
+  data: string;
+  compression: CompressionType;
+};
+
 export type MidiInfoParseResult = {
-  midiInfo: MidiInfo | null;
+  midiInfo: ValidatedMidiInfo | null;
   error?: string;
 };
 
@@ -170,13 +175,42 @@ export async function gzipCompress(data: Uint8Array): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
-export async function gzipDecompress(compressed: Uint8Array): Promise<Uint8Array> {
+export async function gzipDecompress(
+  compressed: Uint8Array,
+  maxBytes?: number,
+): Promise<Uint8Array> {
   ensureDecompressionStreamSupported();
   const stream = new Blob([new Uint8Array(compressed)]).stream().pipeThrough(
     new DecompressionStream("gzip"),
   );
-  const buffer = await new Response(stream).arrayBuffer();
-  return new Uint8Array(buffer);
+
+  if (maxBytes === undefined) {
+    const buffer = await new Response(stream).arrayBuffer();
+    return new Uint8Array(buffer);
+  }
+
+  const reader = stream.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalSize = 0;
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    totalSize += value.length;
+    if (totalSize > maxBytes) {
+      await reader.cancel();
+      throw new Error(`Decompressed payload exceeds ${maxBytes} bytes`);
+    }
+    chunks.push(value);
+  }
+
+  const result = new Uint8Array(totalSize);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return result;
 }
 
 async function ensureLzmaLoaded(): Promise<void> {
@@ -228,7 +262,10 @@ export async function lzmaCompress(data: Uint8Array, mode = 6): Promise<Uint8Arr
   });
 }
 
-export async function lzmaDecompress(compressed: Uint8Array): Promise<Uint8Array> {
+export async function lzmaDecompress(
+  compressed: Uint8Array,
+  maxBytes?: number,
+): Promise<Uint8Array> {
   await ensureLzmaLoaded();
 
   return new Promise<Uint8Array>((resolve, reject) => {
@@ -242,13 +279,36 @@ export async function lzmaDecompress(compressed: Uint8Array): Promise<Uint8Array
         reject(new Error(`LZMA decoding failed: ${String(error)}`));
         return;
       }
-      resolve(result instanceof Uint8Array ? result : new Uint8Array(result));
+      const decoded = result instanceof Uint8Array ? result : new Uint8Array(result);
+      if (maxBytes !== undefined && decoded.length > maxBytes) {
+        reject(new Error(`Decompressed payload exceeds ${maxBytes} bytes`));
+        return;
+      }
+      resolve(decoded);
     });
   });
 }
 
 export function extractMidiInfo(text?: string): MidiInfo | null {
-  return parseMidiInfoPayload(text).midiInfo;
+  const trimmed = text?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (typeof parsed?.data === "string") {
+      return {
+        data: parsed.data,
+        compression:
+          typeof parsed.compression === "string" ? parsed.compression : undefined,
+      };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 export function validateMidiInfo(text?: string): MidiInfoParseResult {

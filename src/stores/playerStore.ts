@@ -145,13 +145,9 @@ export const usePlayerStore = defineStore("player", () => {
 
       let decompressed: Uint8Array;
       if (midiInfo.compression === "gzip") {
-        decompressed = await gzipDecompress(compressed);
+        decompressed = await gzipDecompress(compressed, MAX_DECOMPRESSED_MIDI_BYTES);
       } else {
-        decompressed = await lzmaDecompress(compressed);
-      }
-
-      if (decompressed.length > MAX_DECOMPRESSED_MIDI_BYTES) {
-        throw new Error(`Decompressed payload exceeds ${MAX_DECOMPRESSED_MIDI_BYTES} bytes`);
+        decompressed = await lzmaDecompress(compressed, MAX_DECOMPRESSED_MIDI_BYTES);
       }
 
       if (compressed.length > 0 && decompressed.length / compressed.length > MAX_DECOMPRESSION_RATIO) {

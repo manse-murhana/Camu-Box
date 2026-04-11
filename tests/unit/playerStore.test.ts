@@ -96,7 +96,10 @@ describe("playerStore", () => {
     await Promise.resolve();
 
     expect(playerMocks.base64urlDecode).toHaveBeenCalledWith("encoded-midi");
-    expect(playerMocks.gzipDecompress).toHaveBeenCalledWith(Uint8Array.from([1, 2, 3]));
+    expect(playerMocks.gzipDecompress).toHaveBeenCalledWith(
+      Uint8Array.from([1, 2, 3]),
+      playerMocks.MAX_DECOMPRESSED_MIDI_BYTES,
+    );
     expect(playerMocks.midiConstructor).toHaveBeenCalledWith(Uint8Array.from([11, 12, 13]));
     expect(store.midiReady).toBe(true);
     expect(store.trackTitle).toBe("Mock Title");
@@ -117,14 +120,41 @@ describe("playerStore", () => {
 
   it("logs an error when the decompressed payload exceeds the size limit", async () => {
     const store = usePlayerStore();
-    playerMocks.gzipDecompress.mockResolvedValue(
-      new Uint8Array(playerMocks.MAX_DECOMPRESSED_MIDI_BYTES + 1),
+    playerMocks.gzipDecompress.mockRejectedValue(
+      new Error(`Decompressed payload exceeds ${playerMocks.MAX_DECOMPRESSED_MIDI_BYTES} bytes`),
     );
 
     await store.loadMidiFromText('{"data":"encoded-midi","compression":"gzip"}');
 
     expect(store.logs.at(-1)).toContain(
       `Decompressed payload exceeds ${playerMocks.MAX_DECOMPRESSED_MIDI_BYTES} bytes`,
+    );
+  });
+
+  it("logs an error when the compressed payload exceeds the size limit", async () => {
+    const store = usePlayerStore();
+    playerMocks.base64urlDecode.mockReturnValue(
+      new Uint8Array(playerMocks.MAX_COMPRESSED_MIDI_BYTES + 1),
+    );
+
+    await store.loadMidiFromText('{"data":"encoded-midi","compression":"gzip"}');
+
+    expect(store.logs.at(-1)).toContain(
+      `Compressed payload exceeds ${playerMocks.MAX_COMPRESSED_MIDI_BYTES} bytes`,
+    );
+  });
+
+  it("logs an error when the decompression ratio exceeds the limit", async () => {
+    const store = usePlayerStore();
+    const compressedSize = 10;
+    const decompressedSize = compressedSize * (playerMocks.MAX_DECOMPRESSION_RATIO + 1);
+    playerMocks.base64urlDecode.mockReturnValue(new Uint8Array(compressedSize));
+    playerMocks.gzipDecompress.mockResolvedValue(new Uint8Array(decompressedSize));
+
+    await store.loadMidiFromText('{"data":"encoded-midi","compression":"gzip"}');
+
+    expect(store.logs.at(-1)).toContain(
+      `Decompression ratio exceeds ${playerMocks.MAX_DECOMPRESSION_RATIO}x`,
     );
   });
 

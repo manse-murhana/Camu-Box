@@ -52,7 +52,7 @@ describe("dataUtils", () => {
       data: "abc",
       compression: "gzip",
     });
-    expect(extractMidiInfo('{"data":"abc"}')).toBeNull();
+    expect(extractMidiInfo('{"data":"abc"}')).toEqual({ data: "abc", compression: undefined });
     expect(extractMidiInfo("not json")).toBeNull();
     expect(extractMidiInfo('{"compression":"gzip"}')).toBeNull();
     expect(extractMidiInfo("   ")).toBeNull();
