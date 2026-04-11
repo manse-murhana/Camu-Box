@@ -18,6 +18,7 @@
   "dependencies": {
     "@magenta/music": "^1.23.1",
     "@tonejs/midi": "^2.0.28",
+    "buffer": "^6.0.3",
     "lzma": "^2.3.2",
     "pinia": "^3.0.3",
     "vue": "^3.5.13",
