@@ -23,10 +23,6 @@ export type SoundFontPlayerLike = {
   stop(): void;
 };
 
-export type MagentaNamespace = {
-  SoundFontPlayer: new (soundFontUrl: string) => SoundFontPlayerLike;
-};
-
 export type NdefRecordLike = {
   mediaType?: string;
   data?: BufferSource;
@@ -50,10 +46,6 @@ declare global {
         ): void;
       }
     | undefined;
-
-  interface Window {
-    mm?: MagentaNamespace;
-  }
 
   class NDEFReader {
     scan(options?: { signal?: AbortSignal }): Promise<void>;

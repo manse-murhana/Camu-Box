@@ -1,6 +1,7 @@
 import { computed, ref, shallowRef } from "vue";
 import { defineStore } from "pinia";
 import { Midi } from "@tonejs/midi";
+import { SoundFontPlayer } from "@magenta/music";
 
 import {
   base64urlDecode,
@@ -86,11 +87,6 @@ export const usePlayerStore = defineStore("player", () => {
     }
 
     loadSoundfontPromise.value = (async () => {
-      const magenta = window.mm;
-      if (!magenta?.SoundFontPlayer) {
-        throw new Error("Magenta SoundFontPlayer is not loaded");
-      }
-
       const activeTracks = parsedMidi.tracks.filter((track) => track.notes.length > 0);
       const hasDrums = activeTracks.some((track) => track.channel === 9);
       const instrumentList = [
@@ -105,7 +101,7 @@ export const usePlayerStore = defineStore("player", () => {
         ...(hasDrums ? ["Drums"] : []),
       ];
 
-      const player = new magenta.SoundFontPlayer(
+      const player = new SoundFontPlayer(
         "https://storage.googleapis.com/magentadata/js/soundfonts/sgm_plus",
       );
 

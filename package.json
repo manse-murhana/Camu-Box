@@ -16,6 +16,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@magenta/music": "^1.23.1",
     "@tonejs/midi": "^2.0.28",
     "lzma": "^2.3.2",
     "pinia": "^3.0.3",
