@@ -39,6 +39,11 @@ export type NdefMessageLike = {
 declare global {
   const LZMA:
     | {
+        compress(
+          data: number[],
+          mode: number,
+          callback: (result: number[] | Uint8Array | null, error?: unknown) => void,
+        ): void;
         decompress(
           data: number[],
           callback: (result: number[] | Uint8Array, error?: unknown) => void,

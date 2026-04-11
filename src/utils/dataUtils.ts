@@ -1,6 +1,8 @@
+import lzmaScriptUrl from "lzma/src/lzma_worker-min.js?url";
+
 import type { MidiInfo } from "../types/web-music";
 
-let lzmaDecoderLoadPromise: Promise<void> | null = null;
+let lzmaLoadPromise: Promise<void> | null = null;
 
 export function isAsciiOnly(text: string): boolean {
   for (const char of text) {
@@ -84,21 +86,18 @@ export async function gzipDecompress(compressed: Uint8Array): Promise<Uint8Array
   return new Uint8Array(buffer);
 }
 
-async function ensureLzmaDecoderLoaded(): Promise<void> {
+async function ensureLzmaLoaded(): Promise<void> {
   if (typeof window === "undefined") {
-    throw new Error("LZMA decoder can only be loaded in the browser");
+    throw new Error("LZMA can only be loaded in the browser");
   }
   if (typeof LZMA !== "undefined") {
     return;
   }
-  if (!lzmaDecoderLoadPromise) {
-    lzmaDecoderLoadPromise = new Promise<void>((resolve, reject) => {
+  if (!lzmaLoadPromise) {
+    lzmaLoadPromise = new Promise<void>((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/lzma@2.3.2/src/lzma-d-min.js";
-      script.integrity =
-        "sha384-4BkcOPZ+8zFWl78EIHW2NTkSdJgTDZ0qqtlDIZL2fcnRn7oHgUmCw17LSKVJIxCs";
+      script.src = lzmaScriptUrl;
       script.async = true;
-      script.crossOrigin = "anonymous";
       script.onload = () => {
         if (typeof LZMA !== "undefined") {
           resolve();
@@ -110,11 +109,34 @@ async function ensureLzmaDecoderLoaded(): Promise<void> {
       document.head.appendChild(script);
     });
   }
-  return lzmaDecoderLoadPromise;
+  return lzmaLoadPromise;
+}
+
+export async function lzmaCompress(data: Uint8Array, mode = 6): Promise<Uint8Array> {
+  await ensureLzmaLoaded();
+
+  return new Promise<Uint8Array>((resolve, reject) => {
+    if (typeof LZMA === "undefined") {
+      reject(new Error("LZMA compressor is unavailable"));
+      return;
+    }
+
+    LZMA.compress(Array.from(data), mode, (result, error) => {
+      if (error) {
+        reject(new Error(`LZMA encoding failed: ${String(error)}`));
+        return;
+      }
+      if (!result) {
+        reject(new Error("LZMA encoding failed: empty result"));
+        return;
+      }
+      resolve(result instanceof Uint8Array ? result : Uint8Array.from(result, (value) => value & 0xff));
+    });
+  });
 }
 
 export async function lzmaDecompress(compressed: Uint8Array): Promise<Uint8Array> {
-  await ensureLzmaDecoderLoaded();
+  await ensureLzmaLoaded();
 
   return new Promise<Uint8Array>((resolve, reject) => {
     if (typeof LZMA === "undefined") {

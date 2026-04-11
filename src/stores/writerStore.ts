@@ -2,7 +2,7 @@ import { computed, ref } from "vue";
 import { defineStore } from "pinia";
 import { Midi } from "@tonejs/midi";
 
-import { base64urlEncode, gzipCompress } from "../utils/dataUtils";
+import { base64urlEncode, lzmaCompress } from "../utils/dataUtils";
 import { writeJsonToNfc } from "../utils/nfcUtils";
 import { getDefaultPlayerUrl } from "../utils/playerUrl";
 
@@ -48,11 +48,11 @@ export const useWriterStore = defineStore("writer", () => {
       const arrayBuffer = await file.arrayBuffer();
       const midi = new Midi(new Uint8Array(arrayBuffer));
       const serializedMidi = midi.toArray();
-      const compressed = await gzipCompress(serializedMidi);
+      const compressed = await lzmaCompress(serializedMidi);
       const encoded = base64urlEncode(compressed);
       const jsonString = JSON.stringify({
         data: encoded,
-        compression: "gzip",
+        compression: "lzma",
       });
 
       currentJsonData.value = jsonString;

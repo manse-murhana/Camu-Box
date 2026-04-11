@@ -40,7 +40,7 @@ async function onDrop(event: DragEvent): Promise<void> {
       </div>
 
       <p class="subtitle copy-block">
-        MIDI ファイルを読み込み、gzip 圧縮した JSON として NFC タグに書き込みます。
+        MIDI ファイルを読み込み、LZMA 圧縮した JSON として NFC タグに書き込みます。
       </p>
 
       <button
